@@ -1,18 +1,21 @@
 import React from 'react';
+import dotEnv from 'dotenv';
 import CharactersService from '../services/charactersAPI';
+
+dotEnv.config();
 
 const getRealityClass = (hereIsTheUpsideDownWorld) => (
   hereIsTheUpsideDownWorld ? 'upside-down' : 'stranger-things'
 );
 
 const strangerThingsConfig = {
-  url: 'http://localhost:3002',
-  timeout: 30000,
+  url: process.env.REACT_APP_HAWKINS_URL,
+  timeout: process.env.REACT_APP_HAWKINS_TIMEOUT,
 };
 
 const upsideDownConfig = {
-  url: 'http://localhost:3003',
-  timeout: 30000,
+  url: process.env.REACT_APP_UPSIDEDOWN_URL,
+  timeout: process.env.REACT_APP_UPSIDEDOWN_TIMEOUT,
 };
 
 const charactersService = new CharactersService(strangerThingsConfig);
@@ -37,6 +40,8 @@ class StrangerThings extends React.Component {
 
     this.nextPage = this.nextPage.bind(this);
     this.previousPage = this.previousPage.bind(this);
+
+    this.developmentApp = this.developmentApp.bind(this);
   }
 
   handleInput(event) {
@@ -102,6 +107,12 @@ class StrangerThings extends React.Component {
     );
   }
 
+  developmentApp() {
+    const envDevelopment = JSON.parse(process.env.REACT_APP_DEVELOPMENT);
+    console.log(envDevelopment);
+    if (envDevelopment) return <h2>Em desenvolvimento</h2>;
+  }
+
   renderHeader() {
     return (
       <tr>
@@ -123,7 +134,8 @@ class StrangerThings extends React.Component {
   }
 
   render() {
-    const { hereIsTheUpsideDownWorld, characterName, characters, page } = this.state;
+    const { hereIsTheUpsideDownWorld, characterName,
+      characters, page } = this.state;
     return (
       <div className={ `reality ${getRealityClass(hereIsTheUpsideDownWorld)}` }>
         <div className="content strangerfy">
@@ -160,6 +172,9 @@ class StrangerThings extends React.Component {
           <div>
             <button type="button" onClick={ this.previousPage }>Anterior</button>
             <button type="button" onClick={ this.nextPage }>Próximo</button>
+          </div>
+          <div>
+            {this.developmentApp()}
           </div>
         </div>
       </div>
